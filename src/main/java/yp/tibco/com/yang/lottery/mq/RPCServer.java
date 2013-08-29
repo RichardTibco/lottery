@@ -81,7 +81,7 @@ public class RPCServer implements LotteryListener {
   }
   
   private static boolean isValidAddress(String serverAddress){
-		if(serverAddress.equals("localhost"))
+		if(serverAddress.equalsIgnoreCase("localhost"))
 			return true;
 		else if(serverAddress.contains(".")){ //$NON-NLS-1$
 			StringTokenizer tokenizer = null;

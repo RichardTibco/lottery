@@ -46,7 +46,7 @@ public class RPCClient {
     while (true) {
       QueueingConsumer.Delivery delivery = consumer.nextDelivery();
       if (delivery.getProperties().getCorrelationId().equals(corrId)) {
-        response = new String(delivery.getBody(),"UTF-8");
+        response = new String(delivery.getBody(),"GBK");
         break;
       }
     }
