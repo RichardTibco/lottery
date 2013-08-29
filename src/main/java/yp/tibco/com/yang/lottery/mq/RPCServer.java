@@ -1,10 +1,16 @@
 package yp.tibco.com.yang.lottery.mq;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.swing.JOptionPane;
 
 import org.apache.commons.betwixt.io.BeanWriter;
 
+import yp.tibco.com.App;
 import yp.tibco.com.yang.lottery.client.LotteryClient;
 import yp.tibco.com.yang.lottery.client.LotteryListener;
 import yp.tibco.com.yang.lottery.codec.Constants;
@@ -29,8 +35,8 @@ public class RPCServer implements LotteryListener {
   
   private boolean ready = false;
   
-  public static final int PORT = 33789;
-  public static final String HOST = "localhost";
+  public static int PORT = 33789;
+  public static String HOST = "localhost";
   private LotteryClient lotteryClient = new LotteryClient(HOST, PORT, this);
   
   private static int fib(int n) {
@@ -44,10 +50,68 @@ public class RPCServer implements LotteryListener {
   public static void main(String[] argv) {
 	  RPCServer server = new RPCServer();
 	  
+	  Properties properties = new Properties();
+	  try {
+		properties.load(App.class.getClassLoader().getResourceAsStream("settings.properties"));
+	  } catch (IOException e) {
+		  e.printStackTrace();
+	  }
+	  
+	  String str_host = (String) properties.get("host");
+	  String str_port = (String) properties.get("port");
+	  if(str_host!=null && !str_host.equals("") && isValidAddress(str_host)) {
+		  
+		  HOST = str_host;
+	  }
+	  if(str_port!=null && !str_port.equals("")) {
+		  try {
+			  int i_port = Integer.parseInt(str_port);
+			  if(i_port < 65536) {
+				  PORT = i_port;
+			  }
+		  } catch(NumberFormatException e) {
+//			  e.printStackTrace();
+		  }
+	  }
+	  
+	  
 	  server.connectServer();
       
 	  server.process();
   }
+  
+  private static boolean isValidAddress(String serverAddress){
+		if(serverAddress.equals("localhost"))
+			return true;
+		else if(serverAddress.contains(".")){ //$NON-NLS-1$
+			StringTokenizer tokenizer = null;
+			String token = null;
+			tokenizer = new StringTokenizer(serverAddress,".");
+			int i = 0;
+			while(tokenizer.hasMoreTokens()){
+				if(i > 3)
+					return false;
+				token = tokenizer.nextToken();
+				if(!isValidInteger(token))
+					return false;
+				if(token.length()>3) {
+					return false;
+				}
+				i++;
+			}
+			return true;
+		}
+		return true;
+	}
+  
+  private static boolean isValidInteger(String no){
+		try {
+			Integer.parseInt(no);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
 
 private void connectServer() {
 	if (lotteryClient != null) {
@@ -151,6 +215,7 @@ private static String Object2XmlString(Object object) {
     BeanWriter beanWriter = new BeanWriter(outputWriter);
     beanWriter.getXMLIntrospector().setAttributesForPrimitives(false);
     beanWriter.setWriteIDs(false);
+
 
     try {
 
