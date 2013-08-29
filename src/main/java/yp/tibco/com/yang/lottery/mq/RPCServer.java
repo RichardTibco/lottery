@@ -38,8 +38,22 @@ public class RPCServer implements LotteryListener {
   public static int PORT = 33789;
   public static String HOST = "localhost";
   private LotteryClient lotteryClient = new LotteryClient(HOST, PORT, this);
+  private Integer seq = 0;
   
-  private static int fib(int n) {
+  public Integer getSeq() {
+	  if(seq < Integer.MAX_VALUE){
+		  seq++;
+			
+		}else {
+			seq = 0;
+		}
+	return seq;
+}
+
+
+
+
+private static int fib(int n) {
     if (n ==0) return 0;
     if (n == 1) return 1;
     return fib(n-1) + fib(n-2);
@@ -121,91 +135,121 @@ private void connectServer() {
     lotteryClient.connect();
 }
 
-private void process() {
-	Connection connection = null;
-    Channel channel = null;
-    try {
-      ConnectionFactory factory = new ConnectionFactory();
-      factory.setHost("localhost");
-  
-      connection = factory.newConnection();
-      channel = connection.createChannel();
-      
-      channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
-  
-      channel.basicQos(1);
-  
-      QueueingConsumer consumer = new QueueingConsumer(channel);
-      channel.basicConsume(RPC_QUEUE_NAME, false, consumer);
-  
-      System.out.println(" [x] Awaiting RPC requests");
-  
-      while (true) {
-        String response = null;
-        
-        QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-        
-        BasicProperties props = delivery.getProperties();
-        BasicProperties replyProps = new BasicProperties
-                                         .Builder()
-                                         .correlationId(props.getCorrelationId())
-                                         .build();
-        
-        try {
-          String message = new String(delivery.getBody(),"UTF-8");
-//          int n = Integer.parseInt(message);
-  
-          System.out.println(" [.] SERVER (" + message + ")");
-          
-          //json --->bean
-          GetParameterBean getBean = JSON.parseObject(message, GetParameterBean.class);
-          
-          
-          //bean  ---> xml
-          String xmlStr = Object2XmlString(getBean);
-          LotteryRequest msg = new LotteryRequest();
-          msg.setTransType((byte)1);
-          msg.setFromID(Constants.FROM_ID_MOBILE_SMS);
-          msg.setMessageLength((short)(xmlStr.getBytes().length));
-          msg.setStatus(1);
-          msg.setSequenceNumber(12);
-          msg.setReserve(1);
-          msg.setXmlStr(xmlStr);
-//          response = "" + fib(n);
-          lotteryClient.sendRequest(msg);
-          
-          while (!ready) {
-        	  Thread.sleep(100);
-        	  System.out.println("sleep...");
-          }
-          
-          response = respString;
-        }
-        catch (Exception e){
-          System.out.println(" [.] " + e.toString());
-          response = "";
-        }
-        finally {  
-          channel.basicPublish( "", props.getReplyTo(), replyProps, response.getBytes("UTF-8"));
-  
-          channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-          
-          ready = false;
-        }
-      }
-    }
-    catch  (Exception e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (connection != null) {
-        try {
-          connection.close();
-        }
-        catch (Exception ignore) {}
-      }
-    }
-}
+	private void process() {
+		Connection connection = null;
+		Channel channel = null;
+		try {
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost("192.168.82.186");
+
+			connection = factory.newConnection();
+			channel = connection.createChannel();
+
+			channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);
+
+			channel.basicQos(1);
+
+			QueueingConsumer consumer = new QueueingConsumer(channel);
+			channel.basicConsume(RPC_QUEUE_NAME, false, consumer);
+
+			System.out.println(" [x] Awaiting RPC requests");
+
+			while (true) {
+				String response = null;
+
+				QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+
+				BasicProperties props = delivery.getProperties();
+				BasicProperties replyProps = new BasicProperties.Builder()
+						.correlationId(props.getCorrelationId()).build();
+
+				try {
+					String message = new String(delivery.getBody(), "GBK");
+					// int n = Integer.parseInt(message);
+
+					System.out.println(" [.] SERVER (" + message + ")");
+
+					// json --->bean
+					JSONObject obj = (JSONObject) JSON.parse(message);
+//					String transType = (String) obj.get("transType");
+//					Integer i_transType = Integer.parseInt(transType);
+					Integer i_transType = obj.getInteger("transType");
+					if (i_transType == Constants.TRANS_TYPE_GET_GAME_PARAM) {
+						GetParameterBean getBean = JSON.parseObject(message, GetParameterBean.class);
+
+						// bean ---> xml
+						String xmlStr = Object2XmlString(getBean.getData());
+						LotteryRequest msg = new LotteryRequest();
+						msg.setTransType(getBean.getTransType());
+						msg.setFromID(Constants.FROM_ID_MOBILE_SMS);
+						msg.setMessageLength((short) (xmlStr.getBytes().length));
+						msg.setStatus(1);
+						msg.setSequenceNumber(getSeq());
+						msg.setReserve(1);
+						msg.setXmlStr(xmlStr);
+						lotteryClient.sendRequest(msg);
+					} else if (i_transType == Constants.TRANS_TYPE_PURCHASE) {
+						PurchaseBean getBean = JSON.parseObject(message, PurchaseBean.class);
+
+						// bean ---> xml
+						String xmlStr = Object2XmlString(getBean.getData());
+						LotteryRequest msg = new LotteryRequest();
+						msg.setTransType(getBean.getTransType());
+						msg.setFromID(Constants.FROM_ID_MOBILE_SMS);
+						msg.setMessageLength((short) (xmlStr.getBytes().length));
+						msg.setStatus(1);
+						msg.setSequenceNumber(getSeq());
+						msg.setReserve(1);
+						msg.setXmlStr(xmlStr);
+						lotteryClient.sendRequest(msg);
+					} else if (i_transType == Constants.TRANS_TYPE_QUERY) {
+						QueryBean getBean = JSON.parseObject(message, QueryBean.class);
+
+						// bean ---> xml
+						String xmlStr = Object2XmlString(getBean.getData());
+						LotteryRequest msg = new LotteryRequest();
+						msg.setTransType(getBean.getTransType());
+						msg.setFromID(Constants.FROM_ID_MOBILE_SMS);
+						msg.setMessageLength((short) (xmlStr.getBytes().length));
+						msg.setStatus(1);
+						msg.setSequenceNumber(getSeq());
+						msg.setReserve(1);
+						msg.setXmlStr(xmlStr);
+						lotteryClient.sendRequest(msg);
+					} else {
+						
+					}
+
+					while (!ready) {
+						Thread.sleep(100);
+						System.out.println("sleep...");
+					}
+
+					response = respString;
+				} catch (Exception e) {
+					System.out.println(" [.] " + e.toString());
+					response = "";
+				} finally {
+					channel.basicPublish("", props.getReplyTo(), replyProps,
+							response.getBytes("GBK"));
+
+					channel.basicAck(delivery.getEnvelope().getDeliveryTag(),
+							false);
+
+					ready = false;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (Exception ignore) {
+				}
+			}
+		}
+	}
 
 private static String Object2XmlString(Object object) {
 	String xmlString = null;
