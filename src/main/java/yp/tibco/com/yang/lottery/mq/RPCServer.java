@@ -1,14 +1,16 @@
 package yp.tibco.com.yang.lottery.mq;
 
 import java.awt.image.BufferedImage;
+import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import javax.swing.JOptionPane;
-
+import org.apache.commons.betwixt.io.BeanReader;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.xml.sax.SAXException;
 
 import yp.tibco.com.App;
 import yp.tibco.com.yang.lottery.client.LotteryClient;
@@ -21,11 +23,11 @@ import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.QueueingConsumer;
   
 public class RPCServer implements LotteryListener {
   
@@ -323,7 +325,38 @@ public void sessionClosed() {
 @Override
 public void onMessageArrival(String str) {
 	//TODO transform message to json
+
+	
+//	GetParameterBean responseBean = (GetParameterBean) xmlString2Object(str, "webinf" , GetParameterBean.class);
+//	respString = JSON.toJSONString(responseBean);
+
+	
 	respString = str;
 	ready = true;
 }
+
+public Object xmlString2Object(String xmlString ,String className,Class cl) {
+    StringReader xmlReader = new StringReader(xmlString);
+    BeanReader beanReader = new BeanReader();
+    beanReader.getXMLIntrospector().setAttributesForPrimitives(false); 
+
+   try {
+               beanReader.registerBeanClass(className,cl);
+
+     } catch (IntrospectionException e1) {
+               // TODO Auto-generated catch block
+               e1.printStackTrace();
+     } 
+    Object obj = null;
+    try {
+     obj = beanReader.parse(xmlReader);
+    } catch (IOException e) {
+     e.printStackTrace();
+
+    } catch (SAXException e) {
+     e.printStackTrace();
+    }
+    return obj;
+ }
+
 }
