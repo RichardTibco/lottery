@@ -15,10 +15,13 @@ encoding//src/main/java/yp/tibco/com/yang/lottery/codec/LotteryResponseDecoder.j
 encoding//src/main/java/yp/tibco/com/yang/lottery/codec/LotteryResponseEncoder.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/GetParameterBean.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/GetParameterBeanBody.java=GBK
+encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/GetParameterRespBeanBody.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/PurchaseBean.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/PurchaseBeanBody.java=GBK
+encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/PurchaseRespBeanBody.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/QueryBean.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/QueryBeanBody.java=GBK
+encoding//src/main/java/yp/tibco/com/yang/lottery/json/bean/QueryRespBeanBody.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/message/HeaderMessage.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/message/LotteryRequest.java=GBK
 encoding//src/main/java/yp/tibco/com/yang/lottery/message/LotteryResponse.java=GBK

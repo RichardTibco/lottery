@@ -322,7 +322,7 @@ public void sessionClosed() {
 
 @Override
 public void onMessageArrival(String str) {
-
+	//TODO transform message to json
 	respString = str;
 	ready = true;
 }
