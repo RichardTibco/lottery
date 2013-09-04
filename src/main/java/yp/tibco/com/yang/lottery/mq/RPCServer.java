@@ -17,8 +17,11 @@ import yp.tibco.com.yang.lottery.client.LotteryClient;
 import yp.tibco.com.yang.lottery.client.LotteryListener;
 import yp.tibco.com.yang.lottery.codec.Constants;
 import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
+import yp.tibco.com.yang.lottery.json.bean.GetParameterRespBean;
 import yp.tibco.com.yang.lottery.json.bean.PurchaseBean;
+import yp.tibco.com.yang.lottery.json.bean.PurchaseRespBean;
 import yp.tibco.com.yang.lottery.json.bean.QueryBean;
+import yp.tibco.com.yang.lottery.json.bean.QueryRespBean;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
 import com.alibaba.fastjson.JSON;
@@ -330,8 +333,34 @@ public void onMessageArrival(String str) {
 //	GetParameterBean responseBean = (GetParameterBean) xmlString2Object(str, "webinf" , GetParameterBean.class);
 //	respString = JSON.toJSONString(responseBean);
 
+	int index = str.indexOf("TransType");
+	String tt = str.substring(index);
+	index = tt.indexOf(',');
+	String transT = tt.substring(0, index);
+	index = transT.indexOf(':');
+	String transTypeNo = transT.substring(index+1);
+	transTypeNo = transTypeNo.trim();
 	
-	respString = str;
+	int ttNo = Integer.parseInt(transTypeNo);
+	
+	switch (ttNo) {
+	case 1:
+		GetParameterRespBean responseBean1 = (GetParameterRespBean) xmlString2Object(str, "webinf" , GetParameterRespBean.class);
+		respString = JSON.toJSONString(responseBean1);
+		break;
+	case 3:
+		PurchaseRespBean responseBean2 = (PurchaseRespBean) xmlString2Object(str, "webinf" , PurchaseRespBean.class);
+		respString = JSON.toJSONString(responseBean2);
+		break;
+	case 8:
+		QueryRespBean responseBean3 = (QueryRespBean) xmlString2Object(str, "webinf" , QueryRespBean.class);
+		respString = JSON.toJSONString(responseBean3);
+		break;
+	default:
+		break;
+	}
+	
+//	respString = str;
 	ready = true;
 }
 
