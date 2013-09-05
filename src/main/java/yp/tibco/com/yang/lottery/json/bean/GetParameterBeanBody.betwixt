@@ -1,0 +1,7 @@
+<info primitiveTypes="element">
+ <element name="webinf">
+ 	<element name="TermID" property="termID"/>
+ 	<element name="GameId" property="gameId"/>
+ <!--   <addDefaults />-->
+ </element>
+</info>

@@ -1,0 +1,6 @@
+<info primitiveTypes="element">
+ <element name="webinf">
+		<element name="SerialNo"              property="serialNo"  /> 
+		<element name="BetTime"               property="betTime" />
+ </element>
+</info>

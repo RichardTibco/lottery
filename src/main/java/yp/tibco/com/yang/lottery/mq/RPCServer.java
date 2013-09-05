@@ -10,6 +10,8 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.betwixt.io.BeanReader;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.betwixt.strategy.CapitalizeNameMapper;
+import org.apache.commons.betwixt.strategy.HyphenatedNameMapper;
 import org.xml.sax.SAXException;
 
 import yp.tibco.com.App;
@@ -18,11 +20,16 @@ import yp.tibco.com.yang.lottery.client.LotteryListener;
 import yp.tibco.com.yang.lottery.codec.Constants;
 import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
 import yp.tibco.com.yang.lottery.json.bean.GetParameterRespBean;
+import yp.tibco.com.yang.lottery.json.bean.GetParameterRespBeanBody;
 import yp.tibco.com.yang.lottery.json.bean.PurchaseBean;
+import yp.tibco.com.yang.lottery.json.bean.PurchaseBeanBody;
 import yp.tibco.com.yang.lottery.json.bean.PurchaseRespBean;
+import yp.tibco.com.yang.lottery.json.bean.PurchaseRespBeanBody;
 import yp.tibco.com.yang.lottery.json.bean.QueryBean;
 import yp.tibco.com.yang.lottery.json.bean.QueryRespBean;
+import yp.tibco.com.yang.lottery.json.bean.QueryRespBeanBody;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
+import yp.tibco.com.yang.lottery.message.MessageHelper;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -42,6 +49,10 @@ public class RPCServer implements LotteryListener {
   
   public static int PORT = 33789;
   public static String HOST = "localhost";
+  
+//  public static int PORT = 7100;
+//  public static String HOST = "61.144.230.19";
+  
   private LotteryClient lotteryClient = new LotteryClient(HOST, PORT, this);
   private Integer seq = 0;
   
@@ -262,8 +273,8 @@ private static String Object2XmlString(Object object) {
     StringWriter outputWriter = new StringWriter();
     outputWriter.write("<?xml version='1.0' encoding='gb2312' ?>");
     BeanWriter beanWriter = new BeanWriter(outputWriter);
-    beanWriter.getXMLIntrospector().setAttributesForPrimitives(false);
-    beanWriter.setWriteIDs(false);
+    beanWriter.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(false);
+//    beanWriter.getBindingConfiguration().setMapIDs(false);
 
 
     try {
@@ -333,28 +344,44 @@ public void onMessageArrival(String str) {
 //	GetParameterBean responseBean = (GetParameterBean) xmlString2Object(str, "webinf" , GetParameterBean.class);
 //	respString = JSON.toJSONString(responseBean);
 
-	int index = str.indexOf("TransType");
-	String tt = str.substring(index);
-	index = tt.indexOf(',');
-	String transT = tt.substring(0, index);
-	index = transT.indexOf(':');
-	String transTypeNo = transT.substring(index+1);
-	transTypeNo = transTypeNo.trim();
+	MessageHelper messageHelper = new MessageHelper();
+	messageHelper.setStringToMessage(str);
 	
-	int ttNo = Integer.parseInt(transTypeNo);
+	int ttNo = messageHelper.getTransType();
 	
 	switch (ttNo) {
 	case 1:
-		GetParameterRespBean responseBean1 = (GetParameterRespBean) xmlString2Object(str, "webinf" , GetParameterRespBean.class);
-		respString = JSON.toJSONString(responseBean1);
+		GetParameterRespBeanBody responseBean1 = (GetParameterRespBeanBody) xmlString2Object(messageHelper.getContent().trim(), "webinf" , GetParameterRespBeanBody.class);
+		GetParameterRespBean response1 = new GetParameterRespBean();
+		response1.setData(responseBean1);
+		response1.setFromID(messageHelper.getFromID());
+		response1.setMessage_Length(messageHelper.getMessageLength().intValue());
+		response1.setSequence_Number(messageHelper.getSequenceNumber());
+		response1.setStatus(messageHelper.getStatus());
+		response1.setTransType(messageHelper.getTransType());
+		respString = JSON.toJSONString(response1);
 		break;
 	case 3:
-		PurchaseRespBean responseBean2 = (PurchaseRespBean) xmlString2Object(str, "webinf" , PurchaseRespBean.class);
-		respString = JSON.toJSONString(responseBean2);
+		PurchaseRespBeanBody responseBean2 = (PurchaseRespBeanBody) xmlString2Object(messageHelper.getContent().trim(), "webinf" , PurchaseRespBeanBody.class);
+		PurchaseRespBean response2 = new PurchaseRespBean();
+		response2.setData(responseBean2);
+		response2.setFromID(messageHelper.getFromID());
+		response2.setMessage_Length(messageHelper.getMessageLength().intValue());
+		response2.setSequence_Number(messageHelper.getSequenceNumber());
+		response2.setStatus(messageHelper.getStatus());
+		response2.setTransType(messageHelper.getTransType());
+		respString = JSON.toJSONString(response2);
 		break;
 	case 8:
-		QueryRespBean responseBean3 = (QueryRespBean) xmlString2Object(str, "webinf" , QueryRespBean.class);
-		respString = JSON.toJSONString(responseBean3);
+		QueryRespBeanBody responseBean3 = (QueryRespBeanBody) xmlString2Object(messageHelper.getContent().trim(), "webinf" , QueryRespBeanBody.class);
+		QueryRespBean response3 = new QueryRespBean();
+		response3.setData(responseBean3);
+		response3.setFromID(messageHelper.getFromID());
+		response3.setMessage_Length(messageHelper.getMessageLength().intValue());
+		response3.setSequence_Number(messageHelper.getSequenceNumber());
+		response3.setStatus(messageHelper.getStatus());
+		response3.setTransType(messageHelper.getTransType());
+		respString = JSON.toJSONString(response3);
 		break;
 	default:
 		break;
@@ -367,7 +394,9 @@ public void onMessageArrival(String str) {
 public Object xmlString2Object(String xmlString ,String className,Class cl) {
     StringReader xmlReader = new StringReader(xmlString);
     BeanReader beanReader = new BeanReader();
-    beanReader.getXMLIntrospector().setAttributesForPrimitives(false); 
+    beanReader.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(false); 
+    CapitalizeNameMapper mapper = new CapitalizeNameMapper();
+    beanReader.getXMLIntrospector().getConfiguration().setAttributeNameMapper(mapper);
 
    try {
                beanReader.registerBeanClass(className,cl);

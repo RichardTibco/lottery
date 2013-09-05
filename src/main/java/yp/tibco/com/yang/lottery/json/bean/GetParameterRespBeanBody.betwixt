@@ -1,0 +1,26 @@
+<info primitiveTypes="element">
+ <element name="webinf">
+		<element name="GameName"              property="gameName"  /> 
+		<element name="SaleName"              property="saleName" /> 
+		<element name="GameType"              property="gameType" /> 
+		<element name="GameId"                property="gameId" /> 
+		<element name="BetPerTick"            property="betPerTick" /> 
+		<element name="SpecialNum"            property="specialNum" /> 
+		<element name="NumPerBet"             property="numPerBet" /> 
+		<element name="MultiDraw"             property="multiDraw" /> 
+		<element name="MultiFlag"             property="multiFlag" /> 
+		<element name="SalePerm"              property="salePerm" /> 
+		<element name="MoneyPerBet"           property="moneyPerBet" /> 
+		<element name="ShowDraw"              property="showDraw" /> 
+		<element name="StartTime"             property="startTime" /> 
+		<element name="EndTime"               property="endTime" /> 
+		<element name="MinDan"                property="minDan" /> 
+		<element name="MaxDan"                property="maxDan" /> 
+		<element name="MinTuo"                property="minTuo" /> 
+		<element name="MaxTuo"                property="maxTuo"      /> 
+		<element name="CmaxNum"               property="cmaxNum"     /> 
+		<element name="CminNum"               property="cminNum"     />
+		<element name="PrSpCode"              property="prSpCode"    />
+		<addDefaults />
+ </element>
+</info>

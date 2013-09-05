@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
+import yp.tibco.com.yang.lottery.json.bean.GetParameterBeanBody;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 import yp.tibco.com.yang.lottery.message.LotteryResponse;
 
@@ -101,9 +102,9 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     						+"Message content : " + rt 
     						+ request.getXmlStr() + rt
     						);
-    	String respContent = request.getXmlStr();
-    	
-    	GetParameterBean requestBean = (GetParameterBean) xmlString2Object(request.getXmlStr(), "webinf" , GetParameterBean.class);
+    	String respContent = "<?xml version=\'1.0\' encoding=\'gb2312\' ?><webinf><GameName>B001</GameName><SaleName>shuangseqiu</SaleName><GameType>2</GameType><GameId>2</GameId><BetPerTick>5</BetPerTick><SpecialNum>1</SpecialNum><NumPerBet>7</NumPerBet><MultiDraw>0</MultiDraw><MultiFlag>50</MultiFlag><SalePerm>3</SalePerm><MoneyPerBet>200</MoneyPerBet><ShowDraw>2014029</ShowDraw><StartTime>20140317073000</StartTime><EndTime>20140318200000</EndTime><MinDan>1</MinDan><MaxDan>5</MaxDan><MinTuo>2</MinTuo><MaxTuo>32</MaxTuo><CmaxNum>33</CmaxNum><CminNum>1</CminNum><CSpMaxNum>16</CSpMaxNum><CSpMinNum>1</CSpMinNum></webinf>";
+    	System.out.println("----------------->" + request.getXmlStr());
+    	GetParameterBeanBody requestBean = (GetParameterBeanBody) xmlString2Object(request.getXmlStr(), "webinf" , GetParameterBeanBody.class);
     	LotteryResponse response = new LotteryResponse();
     	response.setTransType(request.getTransType());
     	response.setFromID(request.getFromID());
@@ -119,24 +120,14 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     
     public Object xmlString2Object(String xmlString ,String className,Class cl) {
 
-        // ����һ����ȡxml�ļ�����
 
         StringReader xmlReader = new StringReader(xmlString);
 
-        // ����һ��BeanReaderʵ���൱��ת����
-
         BeanReader beanReader = new BeanReader();
 
-        //����BeanReaderʵ�� 
 
         beanReader.getXMLIntrospector().setAttributesForPrimitives(false); 
 
-//        beanReader.setMatchIDs(false); //���Զ����ID 
-
-
-
-	   //ע��Ҫת��������࣬��ָ����ڵ���� 
-	
 	   try {
 	
 	               //beanReader.registerBeanClass("SelectUserIDListBean", SelectUserIDListBean.class);

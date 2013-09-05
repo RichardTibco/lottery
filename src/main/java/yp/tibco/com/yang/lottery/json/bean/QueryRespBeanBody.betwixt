@@ -1,0 +1,13 @@
+<info primitiveTypes="element">
+ <element name="webinf">
+		<element name="SaleTicket"           property="saleTicket"  /> 
+		<element name="SaleMoney"            property="saleMoney" /> 
+		<element name="CancelTicket"         property="cancelTicket" /> 
+		<element name="CancelMoney"          property="cancelMoney" /> 
+		<element name="CenCelTick"           property="cenCelTick" /> 
+		<element name="CenCelMon"            property="cenCelMon" /> 
+		<element name="CashTicket"           property="cashTicket" /> 
+		<element name="CashMoney"            property="cashMoney" />
+		<addDefaults />
+ </element>
+</info>
