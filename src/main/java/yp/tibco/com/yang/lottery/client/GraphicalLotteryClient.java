@@ -51,6 +51,7 @@ import com.alibaba.fastjson.JSON;
 
 import yp.tibco.com.yang.lottery.codec.Constants;
 import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
+import yp.tibco.com.yang.lottery.json.bean.GetParameterBeanBody;
 import yp.tibco.com.yang.lottery.message.HeaderMessage;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
@@ -102,9 +103,12 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
     }
 
     private void jButtonSendRequestActionPerformed() {
-    	GetParameterBean bean = new GetParameterBean();
-    	bean.setGameId("123");
-    	bean.setTermID("你好");
+    	GetParameterBeanBody data = new GetParameterBeanBody();
+		data.setGameId("123");
+		data.setTermID("222");
+		GetParameterBean bean = new GetParameterBean();
+		bean.setTransType((byte) 1);
+		bean.setData(data);
     	
 //    	String jsonA = "{\"TermID\":234, \"GameId\":456你好}";
     	String jsonA = JSON.toJSONString(bean);

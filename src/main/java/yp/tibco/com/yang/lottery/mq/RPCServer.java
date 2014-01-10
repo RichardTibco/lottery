@@ -9,9 +9,12 @@ import yp.tibco.com.yang.lottery.client.LotteryClient;
 import yp.tibco.com.yang.lottery.client.LotteryListener;
 import yp.tibco.com.yang.lottery.codec.Constants;
 import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
+import yp.tibco.com.yang.lottery.json.bean.PurchaseBean;
+import yp.tibco.com.yang.lottery.json.bean.QueryBean;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;

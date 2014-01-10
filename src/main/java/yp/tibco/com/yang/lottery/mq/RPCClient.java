@@ -6,9 +6,11 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.AMQP.BasicProperties;
+
 import java.util.UUID;
 
 import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
+import yp.tibco.com.yang.lottery.json.bean.GetParameterBeanBody;
     
 public class RPCClient {
     
@@ -65,9 +67,12 @@ public class RPCClient {
 			// System.out.println(" [x] Requesting fib(30)");
 			System.out.println(" [x] Requesting lottery ");
 			// response = fibonacciRpc.call("30");
+			GetParameterBeanBody data = new GetParameterBeanBody();
+			data.setGameId("123");
+			data.setTermID("222");
 			GetParameterBean bean = new GetParameterBean();
-			bean.setGameId("123");
-			bean.setTermID("333");
+			bean.setTransType((byte) 1);
+			bean.setData(data);
 
 			// String jsonA = "{\"TermID\":234, \"GameId\":456���}";
 			String jsonA = JSON.toJSONString(bean);
