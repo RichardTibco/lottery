@@ -179,6 +179,18 @@ public void onImages(BufferedImage image1, BufferedImage image2) {
 @Override
 public void onException(Throwable throwable) {
 	
+	Throwable cause = throwable;
+    while (cause.getCause() != null) {
+        cause = cause.getCause();
+    }
+    System.out.println(cause);
+    System.exit(0);
+//    JOptionPane.showMessageDialog(
+//            this,
+//            cause.getMessage(),
+//            throwable.getMessage(),
+//            JOptionPane.ERROR_MESSAGE);
+	
 }
 
 
