@@ -26,6 +26,7 @@ import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
 import yp.tibco.com.yang.lottery.message.HeaderMessage;
+import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
 /**
  * a decoder for {@link ImageRequest} objects
@@ -46,12 +47,15 @@ public class LotteryRequestDecoder extends CumulativeProtocolDecoder {
         	head.setReserve(in.getInt());
         	
         	if(in.remaining() >= head.getMessageLength()) {
-        		
+        		LotteryRequest request = new LotteryRequest(head);
+        		request.setXmlStr(Byte.toString(in.get()));
+        		out.write(request);
+        		return true;
         	} else {
         		return false;
         	}
 //            out.write(request);
-            return true;
+//            return true;
         } else {
             return false;
         }
