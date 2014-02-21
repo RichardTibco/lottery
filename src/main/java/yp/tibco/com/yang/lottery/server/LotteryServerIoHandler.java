@@ -26,6 +26,8 @@ import org.apache.mina.example.imagine.step1.ImageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import yp.tibco.com.yang.lottery.message.LotteryRequest;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -37,13 +39,13 @@ import java.awt.image.BufferedImage;
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 
-public class ImageServerIoHandler extends IoHandlerAdapter {
+public class LotteryServerIoHandler extends IoHandlerAdapter {
 
     private final static String characters = "mina rocks abcdefghijklmnopqrstuvwxyz0123456789";
 
-    public static final String INDEX_KEY = ImageServerIoHandler.class.getName() + ".INDEX";
+    public static final String INDEX_KEY = LotteryServerIoHandler.class.getName() + ".INDEX";
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ImageServerIoHandler.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(LotteryServerIoHandler.class);
 
     /**
      * Called when the session is opened, which will come after the session created.
@@ -70,13 +72,15 @@ public class ImageServerIoHandler extends IoHandlerAdapter {
      * @see org.apache.mina.core.service.IoHandlerAdapter#messageReceived(org.apache.mina.core.session.IoSession, java.lang.Object)
      */
     public void messageReceived(IoSession session, Object message) throws Exception {
-        ImageRequest request = (ImageRequest) message;
-        String text1 = generateString(session, request.getNumberOfCharacters());
-        String text2 = generateString(session, request.getNumberOfCharacters());
-        BufferedImage image1 = createImage(request, text1);
-        BufferedImage image2 = createImage(request, text2);
-        ImageResponse response = new ImageResponse(image1, image2);
-        session.write(response);
+//        ImageRequest request = (ImageRequest) message;
+//        String text1 = generateString(session, request.getNumberOfCharacters());
+//        String text2 = generateString(session, request.getNumberOfCharacters());
+//        BufferedImage image1 = createImage(request, text1);
+//        BufferedImage image2 = createImage(request, text2);
+//        ImageResponse response = new ImageResponse(image1, image2);
+//        session.write(response);
+    	LotteryRequest request = (LotteryRequest) message;
+    	System.out.println(request.getXmlStr());
     }
 
     /**
