@@ -30,6 +30,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.StringWriter;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -42,10 +43,14 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.mina.example.imagine.step1.ImageRequest;
 import org.apache.mina.example.imagine.step1.server.ImageServer;
 
+import com.alibaba.fastjson.JSON;
+
 import yp.tibco.com.yang.lottery.codec.Constants;
+import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
 import yp.tibco.com.yang.lottery.message.HeaderMessage;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
@@ -61,6 +66,8 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
     public static final int PORT = 33789;
     public static final String HOST = "localhost";
 
+    public Object objBean = null;
+    
     public GraphicalLotteryClient() {
         initComponents();
         jSpinnerHeight.setModel(spinnerHeightModel);
@@ -95,13 +102,44 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
     }
 
     private void jButtonSendRequestActionPerformed() {
+    	GetParameterBean bean = new GetParameterBean();
+    	bean.setGameId("123");
+    	bean.setTermID("ä½ å¥½");
+    	
+//    	String jsonA = "{\"TermID\":234, \"GameId\":456ä½ å¥½}";
+    	String jsonA = JSON.toJSONString(bean);
+    	GetParameterBean getBean = JSON.parseObject(jsonA, GetParameterBean.class);
+    	this.objBean = getBean;
         sendRequest();
     }
 
+    public String Object2XmlString(Object object) {
+    	String xmlString = null;
+
+        StringWriter outputWriter = new StringWriter();
+        outputWriter.write("<?xml version='1.0' encoding='gb2312' ?>\n");
+        BeanWriter beanWriter = new BeanWriter(outputWriter);
+        beanWriter.getXMLIntrospector().setAttributesForPrimitives(false);
+        beanWriter.setWriteIDs(false);
+
+        try {
+
+         beanWriter.write("webinf", object);
+
+        } catch (Exception e) {
+
+         e.printStackTrace();
+
+        }
+
+        xmlString = outputWriter.toString();
+		return xmlString;
+    	
+    }
     private void sendRequest() {
         
-//    	String xmlStr = "<?xml version=\"1.0\"  encoding=\"gb2312\" ?><webinf><RetMsg>Õ¾µãºÅ²»´æÔÚ</Retmsg></webinf>";
-    	String xmlStr = "<?xml version=\"1.0\" encoding=\"gb2312\" ?><webinf></webinf>";
+    	String xmlStr = Object2XmlString(this.objBean);
+//    	String xmlStr = "<?xml version=\"1.0\" encoding=\"gb2312\" ?><webinf></webinf>";
     	LotteryRequest message = new LotteryRequest();
     	message.setTransType((byte)1);
         message.setFromID(Constants.FROM_ID_MOBILE_SMS);

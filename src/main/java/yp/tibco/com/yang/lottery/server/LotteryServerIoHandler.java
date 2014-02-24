@@ -19,13 +19,16 @@
  */
 package yp.tibco.com.yang.lottery.server;
 
+import org.apache.commons.betwixt.io.BeanReader;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.example.imagine.step1.ImageRequest;
 import org.apache.mina.example.imagine.step1.ImageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 import yp.tibco.com.yang.lottery.message.LotteryResponse;
 
@@ -33,6 +36,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * server-side {@link org.apache.mina.core.service.IoHandler}
@@ -96,6 +102,8 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     						+ "  " +   request.getXmlStr()
     						);
     	String respContent = "response message +++++ " + request.getXmlStr();
+    	
+    	GetParameterBean requestBean = (GetParameterBean) xmlString2Object(request.getXmlStr(), "webinf" , GetParameterBean.class);
     	LotteryResponse response = new LotteryResponse();
     	response.setTransType(request.getTransType());
     	response.setFromID(request.getFromID());
@@ -106,6 +114,66 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     	session.write(response);
     }
 
+    
+    
+    public Object xmlString2Object(String xmlString ,String className,Class cl) {
+
+        // 创建一个读取xml文件的流
+
+        StringReader xmlReader = new StringReader(xmlString);
+
+        // 创建一个BeanReader实例，相当于转化器
+
+        BeanReader beanReader = new BeanReader();
+
+        //配置BeanReader实例 
+
+        beanReader.getXMLIntrospector().setAttributesForPrimitives(false); 
+
+//        beanReader.setMatchIDs(false); //不自动生成ID 
+
+
+
+	   //注册要转换对象的类，并指定根节点名称 
+	
+	   try {
+	
+	               //beanReader.registerBeanClass("SelectUserIDListBean", SelectUserIDListBean.class);
+	
+	               beanReader.registerBeanClass(className,cl);
+	
+	     } catch (IntrospectionException e1) {
+	
+	               // TODO Auto-generated catch block
+	
+	               e1.printStackTrace();
+	
+	     } 
+
+        // 将XML解析Java Object
+
+        Object obj = null;
+
+        try {
+
+         obj = beanReader.parse(xmlReader);
+
+        } catch (IOException e) {
+
+         e.printStackTrace();
+
+
+
+        } catch (SAXException e) {
+
+         e.printStackTrace();
+
+        }
+
+        return obj;
+
+     }
+    
     /**
      * Create an image using the specified request and the text.  
      *
