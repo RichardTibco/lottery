@@ -4,12 +4,7 @@ package yp.tibco.com.yang.lottery.message;
 public class LotteryRequest extends HeaderMessage{
 	
 
-
-
-
-	public LotteryRequest(HeaderMessage h) {
-		super(h);
-		// TODO Auto-generated constructor stub
+	public LotteryRequest() {
 	}
 
 

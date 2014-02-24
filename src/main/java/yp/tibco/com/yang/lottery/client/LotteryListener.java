@@ -34,4 +34,6 @@ public interface LotteryListener {
     void sessionOpened();
 
     void sessionClosed();
+    
+    void onMessageArrival(String str);
 }

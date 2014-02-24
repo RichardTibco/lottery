@@ -45,6 +45,7 @@ import javax.swing.WindowConstants;
 import org.apache.mina.example.imagine.step1.ImageRequest;
 import org.apache.mina.example.imagine.step1.server.ImageServer;
 
+import yp.tibco.com.yang.lottery.codec.Constants;
 import yp.tibco.com.yang.lottery.message.HeaderMessage;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
 
@@ -75,12 +76,12 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
             setTitle("connecting...");
             String host = jTextFieldHost.getText();
             int port = Integer.valueOf(jTextFieldPort.getText());
-            if (imageClient != null) {
-                imageClient.disconnect();
+            if (lotteryClient != null) {
+                lotteryClient.disconnect();
             }
-            imageClient = new LotteryClient(host, port, this);
-            imageClient.connect();
-            jButtonConnect.setEnabled(!imageClient.isConnected());
+            lotteryClient = new LotteryClient(host, port, this);
+            lotteryClient.connect();
+            jButtonConnect.setEnabled(!lotteryClient.isConnected());
         } catch (NumberFormatException e) {
             onException(e);
         } catch (IllegalArgumentException e) {
@@ -90,7 +91,7 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
 
     private void jButtonDisconnectActionPerformed() {
         setTitle("disconnecting");
-        imageClient.disconnect();
+        lotteryClient.disconnect();
     }
 
     private void jButtonSendRequestActionPerformed() {
@@ -98,21 +99,18 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
     }
 
     private void sendRequest() {
-//        int chars = spinnerCharsModel.getNumber().intValue();
-//        int height = spinnerHeightModel.getNumber().intValue();
-//        int width = spinnerWidthModel.getNumber().intValue();
-//        imageClient.sendRequest(new ImageRequest(width, height, chars));
         
-        HeaderMessage hmessage = new HeaderMessage();
-        hmessage.setFromID((byte)1);
-        hmessage.setSequenceNumber(12);
-        hmessage.setStatus(1);
-        hmessage.setTransType((byte)1);
-        hmessage.setMessageLength((short)2);
-        LotteryRequest request = new LotteryRequest(hmessage);
-        String xmlStr = "12";
-        request.setXmlStr(xmlStr);
-        imageClient.sendRequest(request);
+//    	String xmlStr = "<?xml version=\"1.0\"  encoding=\"gb2312\" ?><webinf><RetMsg>Õ¾µãºÅ²»´æÔÚ</Retmsg></webinf>";
+    	String xmlStr = "<?xml version=\"1.0\" encoding=\"gb2312\" ?><webinf></webinf>";
+    	LotteryRequest message = new LotteryRequest();
+    	message.setTransType((byte)1);
+        message.setFromID(Constants.FROM_ID_MOBILE_SMS);
+        message.setMessageLength((short)(xmlStr.getBytes().length));
+        message.setStatus(1);
+        message.setSequenceNumber(12);
+        message.setReserve(1);
+        message.setXmlStr(xmlStr);
+        lotteryClient.sendRequest(message);
     }
 
     public void onImages(BufferedImage image1, BufferedImage image2) {
@@ -134,8 +132,8 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
                 throwable.getMessage(),
                 JOptionPane.ERROR_MESSAGE);
         setTitle("");
-        jButtonConnect.setEnabled(!imageClient.isConnected());
-        jButtonDisconnect.setEnabled(imageClient.isConnected());
+        jButtonConnect.setEnabled(!lotteryClient.isConnected());
+        jButtonDisconnect.setEnabled(lotteryClient.isConnected());
     }
 
     public void sessionOpened() {
@@ -329,5 +327,14 @@ public class GraphicalLotteryClient extends JFrame implements LotteryListener {
     private SpinnerNumberModel spinnerWidthModel = new SpinnerNumberModel(200, 50, 1000, 25);
     private SpinnerNumberModel spinnerCharsModel = new SpinnerNumberModel(10, 1, 60, 1);
 
-    private LotteryClient imageClient = new LotteryClient(HOST, PORT, this);
+    private LotteryClient lotteryClient = new LotteryClient(HOST, PORT, this);
+
+	@Override
+	public void onMessageArrival(String str) {
+		if (checkBoxContinuous.isSelected()) {
+            // already request next image
+            sendRequest();
+        }
+        imagePanel1.setContent(str);
+	}
 }

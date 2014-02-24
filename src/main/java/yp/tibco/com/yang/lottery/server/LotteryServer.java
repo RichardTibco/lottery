@@ -22,6 +22,7 @@ package yp.tibco.com.yang.lottery.server;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.example.imagine.step1.codec.ImageCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
@@ -53,6 +54,8 @@ public class LotteryServer {
         
         // set this NioSocketAcceptor's handler to the ImageServerHandler
         acceptor.setHandler(handler);
+        
+//        acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,10);
         
         // Bind to the specified address.  This kicks off the listening for 
         // incoming connections

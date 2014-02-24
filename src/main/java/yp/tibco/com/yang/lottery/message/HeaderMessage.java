@@ -26,7 +26,7 @@ import java.io.Serializable;
  *
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public class HeaderMessage implements Serializable {
+public abstract class HeaderMessage implements Serializable {
 	private Byte TransType;
 	private Byte FromID;
 	private Short MessageLength;

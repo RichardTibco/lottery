@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
+import yp.tibco.com.yang.lottery.message.LotteryResponse;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -80,7 +81,29 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
 //        ImageResponse response = new ImageResponse(image1, image2);
 //        session.write(response);
     	LotteryRequest request = (LotteryRequest) message;
-    	System.out.println(request.getXmlStr());
+    	if(request.getTransType() == 0) {
+    		return;
+    	}
+    	String rt = "\n";
+    	String nb = "    ";
+    	System.out.println("request is =" + rt + nb
+    						+"TransType : " + request.getTransType() + ", " + rt + nb
+    						+"FromID : " + request.getFromID() + ", " + rt + nb
+    						+"MessageLength : " + request.getMessageLength() + ", " + rt + nb
+    						+"Status : " + request.getStatus() + ", " + rt + nb
+    						+"SequenceNumber : " +request.getSequenceNumber() + ", " + rt + nb
+    						+"Message content : " + rt + nb
+    						+ "  " +   request.getXmlStr()
+    						);
+    	String respContent = "response message +++++ " + request.getXmlStr();
+    	LotteryResponse response = new LotteryResponse();
+    	response.setTransType(request.getTransType());
+    	response.setFromID(request.getFromID());
+    	response.setMessageLength((short)(respContent.getBytes().length));
+    	response.setStatus(22);
+    	response.setSequenceNumber(request.getSequenceNumber());
+    	response.setXmlStr(respContent);
+    	session.write(response);
     }
 
     /**

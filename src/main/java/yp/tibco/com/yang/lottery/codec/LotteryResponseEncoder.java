@@ -25,35 +25,61 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.example.imagine.step1.ImageResponse;
 
+import yp.tibco.com.yang.lottery.message.LotteryRequest;
+import yp.tibco.com.yang.lottery.message.LotteryResponse;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 
 /**
  * an encoder for {@link ImageResponse} objects 
  *
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public class LotteryResponseEncoder extends ProtocolEncoderAdapter {
+public class LotteryResponseEncoder<T extends LotteryResponse> extends AbstractMessageEncoder<T> {
 
-    public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        ImageResponse imageResponse = (ImageResponse) message;
-        byte[] bytes1 = getBytes(imageResponse.getImage1());
-        byte[] bytes2 = getBytes(imageResponse.getImage2());
-        int capacity = bytes1.length + bytes2.length + 8;
-        IoBuffer buffer = IoBuffer.allocate(capacity, false);
-        buffer.putInt(bytes1.length);
-        buffer.put(bytes1);
-        buffer.putInt(bytes2.length);
-        buffer.put(bytes2);
-        buffer.flip();
-        out.write(buffer);
-    }
+	public LotteryResponseEncoder() {
+		
+	}
+//    public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
+//        ImageResponse imageResponse = (ImageResponse) message;
+//        byte[] bytes1 = getBytes(imageResponse.getImage1());
+//        byte[] bytes2 = getBytes(imageResponse.getImage2());
+//        int capacity = bytes1.length + bytes2.length + 8;
+//        IoBuffer buffer = IoBuffer.allocate(capacity, false);
+//        buffer.putInt(bytes1.length);
+//        buffer.put(bytes1);
+//        buffer.putInt(bytes2.length);
+//        buffer.put(bytes2);
+//        buffer.flip();
+//        out.write(buffer);
+//    }
 
-    private byte[] getBytes(BufferedImage image) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "PNG", baos);
-        return baos.toByteArray();
+//    private byte[] getBytes(BufferedImage image) throws IOException {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ImageIO.write(image, "PNG", baos);
+//        return baos.toByteArray();
+//    }
+
+	@Override
+	protected void encodeBody(IoSession session, T message, IoBuffer out) {
+		
+		Charset charset = Charset.forName("UTF-8");
+		CharsetEncoder ce = charset.newEncoder();
+		
+		try {
+			out.putString(message.getXmlStr(), ce);
+		} catch (CharacterCodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void dispose(IoSession session) throws Exception {
+        // nothing to dispose
     }
 }

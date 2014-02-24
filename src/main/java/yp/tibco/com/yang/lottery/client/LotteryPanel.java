@@ -35,6 +35,8 @@ public class LotteryPanel extends JPanel {
     
     private BufferedImage image1;
     private BufferedImage image2;
+    
+    private String content;
 
     @Override
     public void paintComponent(Graphics g) {
@@ -45,12 +47,21 @@ public class LotteryPanel extends JPanel {
                 g.drawImage(image2, 20, image1.getHeight() + 80, null);
             }
         }
+        
+//        if (content != null) {
+//        	g.drawString(content, 20, 20);
+//        }
     }
 
     public void setImages(BufferedImage image1, BufferedImage image2) {
         this.image1 = image1;
         this.image2 = image2;
         repaint();
+    }
+    
+    public void setContent(String str) {
+    	content += "\n" + str;
+    	repaint();
     }
 
 }

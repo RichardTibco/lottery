@@ -22,6 +22,7 @@ package yp.tibco.com.yang.lottery.client;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.example.imagine.step1.ImageRequest;
 import org.apache.mina.example.imagine.step1.ImageResponse;
@@ -31,10 +32,14 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import yp.tibco.com.yang.lottery.codec.Constants;
 import yp.tibco.com.yang.lottery.codec.LotteryCodecFactory;
 import yp.tibco.com.yang.lottery.message.LotteryRequest;
+import yp.tibco.com.yang.lottery.message.LotteryResponse;
 
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * client for the {@link ImageServer}
@@ -58,9 +63,11 @@ public class LotteryClient extends IoHandlerAdapter {
 //        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ImageCodecFactory(true)));
         connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LotteryCodecFactory(true)));
         connector.setHandler(this);
+        connector.getSessionConfig().setIdleTime(IdleStatus.WRITER_IDLE, 5);
     }
 
-    public boolean isConnected() {
+
+	public boolean isConnected() {
         return (session != null && session.isConnected());
     }
 
@@ -89,6 +96,38 @@ public class LotteryClient extends IoHandlerAdapter {
     public void sessionClosed(IoSession session) throws Exception {
         imageListener.sessionClosed();
     }
+    
+    @Override
+    public void sessionIdle(IoSession iosession, IdleStatus idlestatus)
+    		throws Exception {
+    	
+    	
+    	if (session == null) {
+            //noinspection ThrowableInstanceNeverThrown
+            imageListener.onException(new Throwable("not connected"));
+        } else {
+        	String xmlStr = "<?xml version=\"1.0\" encoding=\"gb2312\" ?><webinf></webinf>";
+        	LotteryRequest lotteryRequest = new LotteryRequest();
+        	lotteryRequest.setTransType((byte)0);
+        	lotteryRequest.setFromID(Constants.FROM_ID_MOBILE_SMS);
+        	lotteryRequest.setMessageLength((short)(xmlStr.getBytes().length));
+        	lotteryRequest.setStatus(1);
+        	lotteryRequest.setSequenceNumber(12);
+        	lotteryRequest.setReserve(1);
+        	lotteryRequest.setXmlStr(xmlStr);
+            
+        	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        	System.out.println("IDLE " + df.format(new Date()));
+        	
+        	
+            session.write(lotteryRequest);
+        }
+    	
+    	
+    	
+    	
+        
+    }
 
     public void sendRequest(LotteryRequest lotteryRequest) {
         if (session == null) {
@@ -100,8 +139,32 @@ public class LotteryClient extends IoHandlerAdapter {
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
-        ImageResponse response = (ImageResponse) message;
-        imageListener.onImages(response.getImage1(), response.getImage2());
+//        ImageResponse response = (ImageResponse) message;
+//        imageListener.onImages(response.getImage1(), response.getImage2());
+    	LotteryResponse response = (LotteryResponse) message;
+//    	String respStr = "response is =[ "
+//		+" TransType : " + response.getTransType()
+//		+", FromID : " + response.getFromID() 
+//		+", MessageLength : " + response.getMessageLength()
+//		+", Status : " + response.getStatus()
+//		+", SequenceNumber : " +response.getSequenceNumber()
+//		+"Message content : " +  response.getXmlStr()
+//		+"]";
+    	
+    	String rt = "\n";
+    	String nb = "    ";
+    	String respStr =  ("response is =" + rt + nb
+    						+"TransType : " + response.getTransType() + ", " + rt + nb
+    						+"FromID : " + response.getFromID() + ", " + rt + nb
+    						+"MessageLength : " + response.getMessageLength() + ", " + rt + nb
+    						+"Status : " + response.getStatus() + ", " + rt + nb
+    						+"SequenceNumber : " +response.getSequenceNumber() + ", " + rt + nb
+    						+"Message content : " + rt + nb
+    						+ "  " +   response.getXmlStr()
+    						);
+    	System.out.println(respStr);
+		
+    	imageListener.onMessageArrival(respStr);
     }
 
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
