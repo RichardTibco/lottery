@@ -107,7 +107,10 @@ private void process() {
 //          response = "" + fib(n);
           lotteryClient.sendRequest(msg);
           
-          Thread.sleep(2000);
+          while (!ready) {
+        	  Thread.sleep(100);
+        	  System.out.println("sleep...");
+          }
           
           response = respString;
         }
@@ -119,6 +122,8 @@ private void process() {
           channel.basicPublish( "", props.getReplyTo(), replyProps, response.getBytes("UTF-8"));
   
           channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+          
+          ready = false;
         }
       }
     }
@@ -195,5 +200,6 @@ public void sessionClosed() {
 public void onMessageArrival(String str) {
 
 	respString = str;
+	ready = true;
 }
 }

@@ -111,6 +111,7 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     	response.setStatus(22);
     	response.setSequenceNumber(request.getSequenceNumber());
     	response.setXmlStr(respContent);
+    	Thread.sleep(1000);
     	session.write(response);
     }
 
@@ -118,23 +119,23 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     
     public Object xmlString2Object(String xmlString ,String className,Class cl) {
 
-        // ´´½¨Ò»¸ö¶ÁÈ¡xmlÎÄ¼þµÄÁ÷
+        // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¡xmlï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½
 
         StringReader xmlReader = new StringReader(xmlString);
 
-        // ´´½¨Ò»¸öBeanReaderÊµÀý£¬Ïàµ±ÓÚ×ª»¯Æ÷
+        // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½BeanReaderÊµï¿½ï¿½ï¿½àµ±ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
 
         BeanReader beanReader = new BeanReader();
 
-        //ÅäÖÃBeanReaderÊµÀý 
+        //ï¿½ï¿½ï¿½ï¿½BeanReaderÊµï¿½ï¿½ 
 
         beanReader.getXMLIntrospector().setAttributesForPrimitives(false); 
 
-//        beanReader.setMatchIDs(false); //²»×Ô¶¯Éú³ÉID 
+//        beanReader.setMatchIDs(false); //ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ID 
 
 
 
-	   //×¢²áÒª×ª»»¶ÔÏóµÄÀà£¬²¢Ö¸¶¨¸ù½ÚµãÃû³Æ 
+	   //×¢ï¿½ï¿½Òª×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ 
 	
 	   try {
 	
@@ -150,7 +151,7 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
 	
 	     } 
 
-        // ½«XML½âÎöJava Object
+        // ï¿½ï¿½XMLï¿½ï¿½ï¿½ï¿½Java Object
 
         Object obj = null;
 

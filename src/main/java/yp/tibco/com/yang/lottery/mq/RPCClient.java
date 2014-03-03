@@ -67,9 +67,9 @@ public class RPCClient {
 			// response = fibonacciRpc.call("30");
 			GetParameterBean bean = new GetParameterBean();
 			bean.setGameId("123");
-			bean.setTermID("ÄãºÃ");
+			bean.setTermID("333");
 
-			// String jsonA = "{\"TermID\":234, \"GameId\":456ÄãºÃ}";
+			// String jsonA = "{\"TermID\":234, \"GameId\":456ï¿½ï¿½ï¿½}";
 			String jsonA = JSON.toJSONString(bean);
 			response = fibonacciRpc.call(jsonA);
 			System.out.println(" [.] CLIENT Got '" + response + "'");
