@@ -1,11 +1,14 @@
 package yp.tibco.com.yang.lottery.mq;
 
+import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import java.util.UUID;
+
+import yp.tibco.com.yang.lottery.json.bean.GetParameterBean;
     
 public class RPCClient {
     
@@ -53,26 +56,32 @@ public class RPCClient {
     connection.close();
   }
   
-  public static void main(String[] argv) {
-    RPCClient fibonacciRpc = null;
-    String response = null;
-    try {
-      fibonacciRpc = new RPCClient();
-  
-      System.out.println(" [x] Requesting fib(30)");   
-      response = fibonacciRpc.call("30");
-      System.out.println(" [.] Got '" + response + "'");
-    }
-    catch  (Exception e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (fibonacciRpc!= null) {
-        try {
-          fibonacciRpc.close();
-        }
-        catch (Exception ignore) {}
-      }
-    }
-  }
+	public static void main(String[] argv) {
+		RPCClient fibonacciRpc = null;
+		String response = null;
+		try {
+			fibonacciRpc = new RPCClient();
+
+			// System.out.println(" [x] Requesting fib(30)");
+			System.out.println(" [x] Requesting lottery ");
+			// response = fibonacciRpc.call("30");
+			GetParameterBean bean = new GetParameterBean();
+			bean.setGameId("123");
+			bean.setTermID("ÄãºÃ");
+
+			// String jsonA = "{\"TermID\":234, \"GameId\":456ÄãºÃ}";
+			String jsonA = JSON.toJSONString(bean);
+			response = fibonacciRpc.call(jsonA);
+			System.out.println(" [.] CLIENT Got '" + response + "'");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (fibonacciRpc != null) {
+				try {
+					fibonacciRpc.close();
+				} catch (Exception ignore) {
+				}
+			}
+		}
+	}
 }

@@ -92,16 +92,16 @@ public class LotteryServerIoHandler extends IoHandlerAdapter {
     	}
     	String rt = "\n";
     	String nb = "    ";
-    	System.out.println("request is =" + rt + nb
+    	System.out.print("request is =" + rt + nb
     						+"TransType : " + request.getTransType() + ", " + rt + nb
     						+"FromID : " + request.getFromID() + ", " + rt + nb
     						+"MessageLength : " + request.getMessageLength() + ", " + rt + nb
     						+"Status : " + request.getStatus() + ", " + rt + nb
     						+"SequenceNumber : " +request.getSequenceNumber() + ", " + rt + nb
-    						+"Message content : " + rt + nb
-    						+ "  " +   request.getXmlStr()
+    						+"Message content : " + rt 
+    						+ request.getXmlStr() + rt
     						);
-    	String respContent = "response message +++++ " + request.getXmlStr();
+    	String respContent = request.getXmlStr();
     	
     	GetParameterBean requestBean = (GetParameterBean) xmlString2Object(request.getXmlStr(), "webinf" , GetParameterBean.class);
     	LotteryResponse response = new LotteryResponse();

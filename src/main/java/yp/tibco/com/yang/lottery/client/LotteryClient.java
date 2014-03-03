@@ -63,7 +63,7 @@ public class LotteryClient extends IoHandlerAdapter {
 //        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ImageCodecFactory(true)));
         connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LotteryCodecFactory(true)));
         connector.setHandler(this);
-        connector.getSessionConfig().setIdleTime(IdleStatus.WRITER_IDLE, 5);
+        connector.getSessionConfig().setIdleTime(IdleStatus.WRITER_IDLE, 120);
     }
 
 
@@ -159,10 +159,10 @@ public class LotteryClient extends IoHandlerAdapter {
     						+"MessageLength : " + response.getMessageLength() + ", " + rt + nb
     						+"Status : " + response.getStatus() + ", " + rt + nb
     						+"SequenceNumber : " +response.getSequenceNumber() + ", " + rt + nb
-    						+"Message content : " + rt + nb
-    						+ "  " +   response.getXmlStr()
+    						+"Message content : " + rt 
+    						+ response.getXmlStr() +rt
     						);
-    	System.out.println(respStr);
+    	System.out.print(respStr);
 		
     	imageListener.onMessageArrival(respStr);
     }
